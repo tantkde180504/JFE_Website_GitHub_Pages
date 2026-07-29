@@ -1,5 +1,6 @@
 
 const Q=window.JFE_QUESTIONS||[];
+const EXP=window.JFE_EXPLANATIONS||{};
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const KEY='jfe_fe_progress_v1';
 let state=JSON.parse(localStorage.getItem(KEY)||'{}'); state.answers??={};state.stars??={};state.theme??='light';
@@ -66,7 +67,7 @@ function render(){
       box.innerHTML=`❌ Sai rồi! Đáp án đúng là: <strong>${esc(q.answer)}</strong>${q.answerText?'<br><span class="answer-text">'+esc(q.answerText)+'</span>':''}<br><button id="retryBtn" class="retry-btn">↺ Làm lại câu này</button>`;
       $('#retryBtn').onclick=()=>{delete state.answers[q.id];save();render();};
     }
-    updateStats();renderMap();
+    updateStats();renderMap();showExplanation(q);
   });
 
   $('#starBtn').textContent=state.stars[q.id]?'★':'☆';
@@ -88,7 +89,30 @@ function render(){
     box.className='answer-box hidden';
     box.textContent='';
   }
+  showExplanation(rec?.checked ? q : null);
   updateStats();renderMap();
+}
+
+function showExplanation(q){
+  const expBox=$('#explanationBox');
+  const expContent=$('#expContent');
+  if(!q){expBox.className='explanation-box hidden';expContent.innerHTML='';return;}
+  const text=EXP[q.id];
+  if(text){
+    expContent.innerHTML=text;
+    expBox.className='explanation-box';
+  } else {
+    expContent.innerHTML='<span class="exp-empty">Chưa có giải thích cho câu này. Bạn có thể thêm vào file <code>explanations.js</code>.</span>';
+    expBox.className='explanation-box exp-missing';
+  }
+  // Setup toggle
+  const toggle=$('#expToggle');
+  toggle.onclick=()=>{
+    const collapsed=expBox.classList.toggle('collapsed');
+    toggle.textContent=collapsed?'Mở rộng ▼':'Thu gọn ▲';
+  };
+  expBox.classList.remove('collapsed');
+  toggle.textContent='Thu gọn ▲';
 }
 
 function showAnswer(mark){
