@@ -2,13 +2,13 @@
 <header><div><h1>JFE <span>Ôn tập FE</span></h1><p>Ngân hàng câu hỏi đã lọc trùng và sắp xếp theo chương</p></div><div class="head-actions"><button id="themeBtn" title="Đổi giao diện">🌙</button><button id="exportBtn">Xuất tiến độ</button><label class="import-label">Nhập tiến độ<input id="importInput" type="file" accept="application/json"></label></div></header>
 <main>
 <section class="toolbar card">
-<div class="row"><label>Chương<select id="chapterSelect"></select></label><label>Nguồn<select id="sourceSelect"><option value="all">Tất cả đề</option></select></label><label>Chế độ<select id="orderSelect"><option value="sequential">Lần lượt</option><option value="random">Ngẫu nhiên</option></select></label><label>Tìm câu<input id="searchInput" placeholder="Từ khóa hoặc ID"></label><button id="resetBtn" class="danger">↺ Làm lại bộ lọc</button></div>
+<div class="row"><label>Chương<select id="chapterSelect"></select></label><label>Nguồn<select id="sourceSelect"><option value="all">Tất cả đề</option></select></label><label>Mức<select id="levelSelect"></select></label><label>Chế độ<select id="orderSelect"><option value="sequential">Lần lượt</option><option value="random">Ngẫu nhiên</option></select></label><label>Tìm câu<input id="searchInput" placeholder="Từ khóa hoặc #số"></label><button id="resetBtn" class="danger">↺ Làm lại bộ lọc</button></div>
 <div class="stats"><span><b id="doneCount">0</b> đã làm</span><span class="ok"><b id="correctCount">0</b> đúng</span><span class="bad"><b id="wrongCount">0</b> sai</span><span><b id="remainingCount">0</b> còn</span></div>
 <div class="progress"><i id="progressBar"></i></div>
 <div class="filter-tabs"><button data-filter="all" class="active">Tất cả</button><button data-filter="wrong">Sai</button><button data-filter="unanswered">Chưa</button><button data-filter="starred">★ Đã đánh dấu</button></div>
 </section>
 <section class="quiz card">
-<div class="meta"><span id="position"></span><span id="chapterBadge"></span><span id="sourceBadge"></span></div>
+<div class="meta"><span id="position"></span><span id="chapterBadge"></span><span id="sourceBadge"></span><span id="levelBadge"></span></div>
 <h2 id="questionText">Đang tải…</h2><div id="options" class="options"></div>
 <div id="answerBox" class="answer-box hidden"></div>
 <div id="explanationBox" class="explanation-box hidden"><div class="exp-header"><span class="exp-icon">💡</span><span>Giải thích</span><button id="expToggle" class="exp-toggle">Thu gọn ▲</button></div><div id="expContent" class="exp-content"></div></div>

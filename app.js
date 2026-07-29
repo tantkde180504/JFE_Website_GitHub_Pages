@@ -8,13 +8,15 @@ let filter='all', list=[], idx=0;
 const save=()=>{localStorage.setItem(KEY,JSON.stringify(state));updateStats();renderMap()};
 const chapters=[...new Set(Q.map(q=>q.chapter))];
 const sources=[...new Set(Q.flatMap(q=>q.source.split(',').map(x=>x.trim().split(' ')[0])).filter(Boolean))].sort();
+const levels=[...new Set(Q.map(q=>q.level).filter(Boolean))];
 $('#chapterSelect').innerHTML='<option value="all">Tất cả chương</option>'+chapters.map(c=>`<option>${esc(c)}</option>`).join('');
 $('#sourceSelect').innerHTML+=[...sources].map(s=>`<option>${esc(s)}</option>`).join('');
+if($('#levelSelect')) $('#levelSelect').innerHTML='<option value="all">Tất cả mức</option>'+levels.map(l=>`<option>${esc(l)}</option>`).join('');
 document.body.classList.toggle('dark',state.theme==='dark'); $('#themeBtn').textContent=state.theme==='dark'?'☀️':'🌙';
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function status(q){const a=state.answers[q.id]; if(!a)return'unanswered';return a.correct?'correct':'wrong'}
-function rebuild(keepId){const ch=$('#chapterSelect').value, src=$('#sourceSelect').value, term=$('#searchInput').value.trim().toLowerCase();
- list=Q.filter(q=>(ch==='all'||q.chapter===ch)&&(src==='all'||q.source.includes(src))&&(!term||String(q.id)===term||q.question.toLowerCase().includes(term)||q.source.toLowerCase().includes(term))&&(filter==='all'||filter==='starred'&&state.stars[q.id]||filter===status(q)));
+function rebuild(keepId){const ch=$('#chapterSelect').value, src=$('#sourceSelect').value, lv=$('#levelSelect')?$('#levelSelect').value:'all', term=$('#searchInput').value.trim().toLowerCase();
+ list=Q.filter(q=>(ch==='all'||q.chapter===ch)&&(src==='all'||q.source.includes(src))&&(lv==='all'||q.level===lv)&&(!term||String(q.id)===term||String(q.rank)===term||q.question.toLowerCase().includes(term)||q.source.toLowerCase().includes(term))&&(filter==='all'||filter==='starred'&&state.stars[q.id]||filter===status(q)));
  if($('#orderSelect').value==='random') list=[...list].sort(()=>Math.random()-.5); idx=Math.max(0,list.findIndex(q=>q.id===keepId)); if(idx<0)idx=0;render();}
 
 function renderOption(k,v,rec,q){
@@ -30,9 +32,10 @@ function renderOption(k,v,rec,q){
 function render(){
   if(!list.length){$('#questionText').innerHTML='<div class="empty">Không có câu hỏi phù hợp bộ lọc.</div>';$('#options').innerHTML='';$('#position').textContent='0 / 0';renderMap();updateStats();return}
   const q=list[idx]; const rec=state.answers[q.id];
-  $('#position').textContent=`Câu ${idx+1} / ${list.length} · ID ${q.id}`;
+  $('#position').textContent=`Câu ${idx+1} / ${list.length} · #${q.rank}`;
   $('#chapterBadge').textContent=q.chapter;
   $('#sourceBadge').textContent=q.source;
+  if($('#levelBadge')){$('#levelBadge').textContent=q.level||'';$('#levelBadge').className='level-badge level-'+((q.level||'').replace(/\s+/g,'-').toLowerCase());}
   $('#questionText').textContent=q.question;
 
   const has=Object.values(q.options).some(Boolean);
@@ -59,12 +62,13 @@ function render(){
     // Hiện hộp kết quả
     const box=$('#answerBox');
     box.classList.remove('hidden');
+    const reasonHtml=q.reason?`<div class="reason-text">📌 ${esc(q.reason)}</div>`:'';
     if(correct){
       box.className='answer-box answer-correct';
-      box.textContent=`✅ Chính xác! Đáp án: ${q.answer}${q.answerText?'\n'+q.answerText:''}`;
+      box.innerHTML=`✅ Chính xác! Đáp án: <strong>${esc(q.answer)}</strong>${q.answerText?'<br><span class="answer-text">'+esc(q.answerText)+'</span>':''}${reasonHtml}`;
     } else {
       box.className='answer-box answer-wrong';
-      box.innerHTML=`❌ Sai rồi! Đáp án đúng là: <strong>${esc(q.answer)}</strong>${q.answerText?'<br><span class="answer-text">'+esc(q.answerText)+'</span>':''}<br><button id="retryBtn" class="retry-btn">↺ Làm lại câu này</button>`;
+      box.innerHTML=`❌ Sai rồi! Đáp án đúng là: <strong>${esc(q.answer)}</strong>${q.answerText?'<br><span class="answer-text">'+esc(q.answerText)+'</span>':''}${reasonHtml}<br><button id="retryBtn" class="retry-btn">↺ Làm lại câu này</button>`;
       $('#retryBtn').onclick=()=>{delete state.answers[q.id];save();render();};
     }
     updateStats();renderMap();showExplanation(q);
@@ -77,12 +81,13 @@ function render(){
   const box=$('#answerBox');
   if(rec?.checked){
     box.classList.remove('hidden');
+    const reasonHtml=q.reason?`<div class="reason-text">📌 ${esc(q.reason)}</div>`:'';
     if(rec.correct){
       box.className='answer-box answer-correct';
-      box.textContent=`✅ Chính xác! Đáp án: ${q.answer}${q.answerText?'\n'+q.answerText:''}`;
+      box.innerHTML=`✅ Chính xác! Đáp án: <strong>${esc(q.answer)}</strong>${q.answerText?'<br><span class="answer-text">'+esc(q.answerText)+'</span>':''}${reasonHtml}`;
     } else {
       box.className='answer-box answer-wrong';
-      box.innerHTML=`❌ Sai rồi! Đáp án đúng là: <strong>${esc(q.answer)}</strong>${q.answerText?'<br><span class="answer-text">'+esc(q.answerText)+'</span>':''}<br><button id="retryBtn" class="retry-btn">↺ Làm lại câu này</button>`;
+      box.innerHTML=`❌ Sai rồi! Đáp án đúng là: <strong>${esc(q.answer)}</strong>${q.answerText?'<br><span class="answer-text">'+esc(q.answerText)+'</span>':''}${reasonHtml}<br><button id="retryBtn" class="retry-btn">↺ Làm lại câu này</button>`;
       $('#retryBtn').onclick=()=>{delete state.answers[q.id];save();render();};
     }
   } else {
@@ -128,7 +133,7 @@ function showAnswer(mark){
 function updateStats(){const scope=Q.filter(q=>$('#chapterSelect').value==='all'||q.chapter===$('#chapterSelect').value);let done=0,correct=0,wrong=0;scope.forEach(q=>{const a=state.answers[q.id];if(a?.checked){done++;a.correct?correct++:wrong++}});$('#doneCount').textContent=done;$('#correctCount').textContent=correct;$('#wrongCount').textContent=wrong;$('#remainingCount').textContent=scope.length-done;$('#progressBar').style.width=(scope.length?done/scope.length*100:0)+'%'}
 function renderMap(){const box=$('#questionMap');box.innerHTML=list.map((q,i)=>`<button data-i="${i}" class="${i===idx?'current ':''}${status(q)} ${state.stars[q.id]?'starred':''}" title="ID ${q.id}">${i+1}</button>`).join('');box.querySelectorAll('button').forEach(b=>b.onclick=()=>{idx=+b.dataset.i;render();scrollTo({top:0,behavior:'smooth'})});$('#mapSummary').textContent=`${list.length} câu`}
 $('#prevBtn').onclick=()=>{if(list.length){idx=(idx-1+list.length)%list.length;render()}};$('#nextBtn').onclick=()=>{if(list.length){idx=(idx+1)%list.length;render()}};$('#checkBtn').onclick=()=>showAnswer(true);$('#showBtn').onclick=()=>showAnswer(false);$('#starBtn').onclick=()=>{if(!list.length)return;const id=list[idx].id;state.stars[id]=!state.stars[id];save();render()};
-['chapterSelect','sourceSelect','orderSelect'].forEach(id=>$('#'+id).onchange=()=>rebuild(list[idx]?.id));$('#searchInput').oninput=()=>rebuild();$$('.filter-tabs button').forEach(b=>b.onclick=()=>{$$('.filter-tabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.filter;rebuild()});
+['chapterSelect','sourceSelect','orderSelect','levelSelect'].forEach(id=>{if($('#'+id))$('#'+id).onchange=()=>rebuild(list[idx]?.id)});$('#searchInput').oninput=()=>rebuild();$$('.filter-tabs button').forEach(b=>b.onclick=()=>{$$('.filter-tabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.filter;rebuild()});
 $('#resetBtn').onclick=()=>{if(confirm('Xóa toàn bộ tiến độ của bộ câu hỏi hiện tại?')){state.answers={};save();rebuild()}};
 $('#themeBtn').onclick=()=>{state.theme=state.theme==='dark'?'light':'dark';document.body.classList.toggle('dark',state.theme==='dark');$('#themeBtn').textContent=state.theme==='dark'?'☀️':'🌙';save()};
 $('#exportBtn').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:'application/json'}));a.download='jfe-progress.json';a.click();URL.revokeObjectURL(a.href)};
