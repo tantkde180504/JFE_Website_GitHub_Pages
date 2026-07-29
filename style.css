@@ -24,8 +24,45 @@ body.dark{--bg:#0f172a;--card:#172033;--text:#e5edf7;--muted:#9eacc0;--line:#2b3
 .explanation-box.collapsed .exp-content{display:none}
 .exp-empty{color:var(--muted);font-style:italic}
 .exp-content code{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:.88em}
-@media(max-width:900px){.row{grid-template-columns:1fr 1fr}.row .danger{grid-column:span 2}header{align-items:flex-start;flex-direction:column}.stats{gap:12px;justify-content:space-between}.quiz{padding:18px}}
-@media(max-width:520px){.row{grid-template-columns:1fr}.row .danger{grid-column:auto}.stats{display:grid;grid-template-columns:1fr 1fr}.actions button{flex:1}.quiz h2{font-size:17px}}
+@media(max-width:900px){
+  .row{grid-template-columns:1fr 1fr}
+  .row .danger{grid-column:span 2}
+  header{flex-direction:column;align-items:flex-start;padding:16px 18px;gap:10px}
+  h1{font-size:22px}
+  header p{font-size:13px}
+  .head-actions{width:100%;justify-content:flex-start;gap:6px}
+  .head-actions button,.import-label{padding:8px 11px;font-size:13px}
+  .stats{gap:12px;justify-content:space-between}
+  .quiz{padding:16px}
+  main{margin:12px auto;padding:0 12px}
+  .card{border-radius:12px}
+}
+@media(max-width:520px){
+  .row{grid-template-columns:1fr}
+  .row .danger{grid-column:auto;margin-top:2px}
+  header{padding:14px 14px}
+  h1{font-size:20px}
+  .head-actions{gap:5px}
+  .head-actions button,.import-label{padding:7px 10px;font-size:12px}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .stats b{font-size:16px}
+  .filter-tabs{gap:5px}
+  .filter-tabs button{flex:1;padding:9px 6px;font-size:13px;text-align:center}
+  .quiz{padding:14px}
+  .quiz h2{font-size:15px;margin:14px 0}
+  .meta{font-size:12px;gap:5px}
+  .option{padding:12px 10px;gap:9px;font-size:14px}
+  .option .letter{width:26px;height:26px;flex:0 0 26px;font-size:13px}
+  .actions{gap:6px;margin-top:16px}
+  .actions button{flex:1;padding:12px 6px;font-size:14px}
+  #checkBtn{flex:2}
+  .question-map button{min-height:38px;font-size:11px}
+  .answer-box{font-size:14px;padding:12px}
+  .exp-content{font-size:.9em;padding:12px 13px}
+  main{padding:0 8px;margin:8px auto}
+  .card{border-radius:10px}
+  footer{padding:16px;font-size:12px}
+}
 .level-badge{font-weight:700;font-size:.78em;padding:4px 10px;border-radius:999px;letter-spacing:.3px}
 .level-badge.level-rất-cao{background:#fee2e2;color:#b91c1c}
 .level-badge.level-cao{background:#ffedd5;color:#c2410c}
